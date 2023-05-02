@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+    app:
+        build: ./docker/php
+        volumes:
+            - ./framework:/framework
+    web:
+        image: nginx:1.20-alpine
+        ports:
+            - 8086:80
+        volumes:
+            - ./framework:/framework
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        working_dir: /framework
+    db:
+        build: ./docker/mysql
+        ports:
+            - 13306:3306
+        volumes:
+            - db-store:/var/lib/mysql
+    mailpit:
+        image: axllent/mailpit
+        tty: true
+        ports:
+          - "8025:8025"
+          - "1025:1025"
+        environment:
+          MP_DATA_FILE: /home/mailpit/mails
+        volumes:
+          - ./mails/mailpit:/home/mailpit/mails
+
+volumes:
+    db-store:
